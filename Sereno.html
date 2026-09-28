@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SERENO — Estado de tu sala de estudio</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    /* ---- Welcome screen ---- */
+    .welcome-screen {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 50%, #ecfdf5 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+    }
+
+    .welcome-container {
+      width: 100%;
+      max-width: 672px;
+    }
+
+    .welcome-hero {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 25px rgba(14, 165, 233, 0.2);
+    }
+
+    .logo-badge svg {
+      width: 40px;
+      height: 40px;
+      color: #fff;
+    }
+
+    .welcome-title {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: #0f172a;
+      margin-bottom: 0.75rem;
+    }
+
+    @media (min-width: 640px) {
+      .welcome-title {
+        font-size: 3.75rem;
+      }
+    }
+
+    .welcome-subtitle {
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .welcome-subtitle {
+        font-size: 1.25rem;
+      }
+    }
+
+    .welcome-description {
+      font-size: 0.875rem;
+      color: #64748b;
+      max-width: 512px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    @media (min-width: 640px) {
+      .welcome-description {
+        font-size: 1rem;
+      }
+    }
+
+    /* ---- Legend cards ---- */
+    .legend-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .legend-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .legend-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.25rem;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .legend-card.emerald { box-shadow: 0 0 0 1px #d1fae5; }
+    .legend-card.amber   { box-shadow: 0 0 0 1px #fef3c7; }
+    .legend-card.red     { box-shadow: 0 0 0 1px #fee2e2; }
+
+    .legend-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      margin-bottom: 0.75rem;
+    }
+
+    .legend-icon.emerald { background: #ecfdf5; }
+    .legend-icon.amber   { background: #fffbeb; }
+    .legend-icon.red     { background: #fef2f2; }
+
+    .legend-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.emerald { background: #10b981; }
+    .legend-dot.amber   { background: #f59e0b; }
+    .legend-dot.red     { background: #ef4444; }
+
+    .legend-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .legend-label.emerald { color: #047857; }
+    .legend-label.amber   { color: #b45309; }
+    .legend-label.red     { color: #dc2626; }
+
+    .legend-desc {
+      font-size: 0.75rem;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    /* ---- Start button ---- */
+    .start-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(to right, #0284c7, #059669);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 1rem 2.5rem;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 20px rgba(14, 165, 233, 0.25);
+    }
+
+    .start-button:hover {
+      background: linear-gradient(to right, #0369a1, #047857);
+      box-shadow: 0 15px 30px rgba(14, 165, 233, 0.3);
+    }
+
+    .start-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ---- Monitor screen ---- */
+    .monitor-screen {
+      min-height: 100vh;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .monitor-screen {
+        padding: 3rem 1rem;
+      }
+    }
+
+    .monitor-header {
+      width: 100%;
+      max-width: 576px;
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .monitor-header-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .monitor-header-logo svg {
+      width: 28px;
+      height: 28px;
+      color: #1e293b;
+    }
+
+    .monitor-header-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: #0f172a;
+    }
+
+    .monitor-header-subtitle {
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+
+    @media (min-width: 640px) {
+      .monitor-header-subtitle {
+        font-size: 1rem;
+      }
+    }
+
+    .monitor-main {
+      width: 100%;
+      max-width: 576px;
+    }
+
+    /* ---- Main card ---- */
+    .noise-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 0 0 1px var(--ring-color, #e2e8f0);
+      transition: all 0.5s ease;
+    }
+
+    @media (min-width: 640px) {
+      .noise-card {
+        padding: 2.5rem;
+      }
+    }
+
+    .noise-card-title {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #94a3b8;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .db-display {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .db-number-wrap {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      transition: opacity 0.3s ease;
+    }
+
+    .db-number-wrap.loading {
+      opacity: 0.4;
+    }
+
+    .db-number {
+      font-size: 4.5rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.025em;
+      transition: color 0.5s ease;
+    }
+
+    @media (min-width: 640px) {
+      .db-number {
+        font-size: 6rem;
+      }
+    }
+
+    .db-unit {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    @media (min-width: 640px) {
+      .db-unit {
+        font-size: 1.875rem;
+      }
+    }
+
+    /* ---- Status indicator ---- */
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      border-radius: 16px;
+      transition: all 0.5s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .status-dot-wrap {
+      position: relative;
+      display: flex;
+      width: 14px;
+      height: 14px;
+      transition: opacity 0.3s ease;
+    }
+
+    .status-dot-wrap.loading {
+      opacity: 0.4;
+    }
+
+    .status-dot-ping {
+      position: absolute;
+      display: inline-flex;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    .status-dot {
+      position: relative;
+      display: inline-flex;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    @keyframes ping {
+      0%   { transform: scale(1); opacity: 0.6; }
+      75%, 100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .status-label {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.025em;
+      transition: color 0.5s ease;
+    }
+
+    @media (min-width: 640px) {
+      .status-label {
+        font-size: 1.125rem;
+      }
+    }
+
+    /* ---- Description ---- */
+    .status-description {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #475569;
+      margin-bottom: 1.5rem;
+      min-height: 2.5rem;
+      transition: opacity 0.3s ease;
+    }
+
+    @media (min-width: 640px) {
+      .status-description {
+        font-size: 1rem;
+      }
+    }
+
+    .status-description.loading {
+      opacity: 0.4;
+    }
+
+    /* ---- Last measurement ---- */
+    .last-measurement {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      margin-bottom: 2rem;
+    }
+
+    .last-measurement svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .last-measurement strong {
+      color: #475569;
+      font-weight: 500;
+    }
+
+    /* ---- Update button ---- */
+    .update-button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: #0f172a;
+      color: #fff;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.875rem 1.5rem;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .update-button:hover {
+      background: #1e293b;
+    }
+
+    .update-button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .update-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .update-button svg.spin {
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ---- Back button ---- */
+    .back-button-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #64748b;
+      font-weight: 500;
+      font-size: 0.875rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .back-button:hover {
+      color: #1e293b;
+    }
+
+    .back-button svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ---- Footer note ---- */
+    .footer-note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 1.5rem;
+    }
+
+    /* ---- Color states ---- */
+    /* Emerald (green) */
+    .state-emerald .noise-card       { --ring-color: #d1fae5; }
+    .state-emerald .db-number        { color: #047857; }
+    .state-emerald .status-indicator { background: #ecfdf5; }
+    .state-emerald .status-dot       { background: #10b981; }
+    .state-emerald .status-dot-ping  { background: #10b981; }
+    .state-emerald .status-label     { color: #047857; }
+
+    /* Amber (yellow/orange) */
+    .state-amber .noise-card         { --ring-color: #fef3c7; }
+    .state-amber .db-number          { color: #b45309; }
+    .state-amber .status-indicator   { background: #fffbeb; }
+    .state-amber .status-dot         { background: #f59e0b; }
+    .state-amber .status-dot-ping    { background: #f59e0b; }
+    .state-amber .status-label       { color: #b45309; }
+
+    /* Red */
+    .state-red .noise-card           { --ring-color: #fee2e2; }
+    .state-red .db-number            { color: #dc2626; }
+    .state-red .status-indicator     { background: #fef2f2; }
+    .state-red .status-dot           { background: #ef4444; }
+    .state-red .status-dot-ping      { background: #ef4444; }
+    .state-red .status-label         { color: #dc2626; }
+
+    /* ---- Screen visibility ---- */
+    .hidden { display: none !important; }
+  </style>
+  <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+</head>
+<body>
+
+  <!-- ============ WELCOME SCREEN ============ -->
+  <div id="welcome-screen" class="welcome-screen">
+    <div class="welcome-container">
+      <div class="welcome-hero">
+        <div class="logo-badge">
+          <!-- Volume2 icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+        </div>
+        <h1 class="welcome-title">SERENO</h1>
+        <p class="welcome-subtitle">Estado de tu sala de estudio</p>
+        <p class="welcome-description">
+          Mide el nivel de ruido de tu espacio compartido y descubre si es un buen momento para concentrarte.
+        </p>
+      </div>
+
+      <div class="legend-grid">
+        <div class="legend-card emerald">
+          <div class="legend-icon emerald">
+            <span class="legend-dot emerald"></span>
+          </div>
+          <p class="legend-label emerald">Menos de 50 dB</p>
+          <p class="legend-desc">Se puede trabajar con normalidad</p>
+        </div>
+        <div class="legend-card amber">
+          <div class="legend-icon amber">
+            <span class="legend-dot amber"></span>
+          </div>
+          <p class="legend-label amber">50 – 65 dB</p>
+          <p class="legend-desc">Concentración media</p>
+        </div>
+        <div class="legend-card red">
+          <div class="legend-icon red">
+            <span class="legend-dot red"></span>
+          </div>
+          <p class="legend-label red">Más de 65 dB</p>
+          <p class="legend-desc">Ruido alto, difícil estudiar</p>
+        </div>
+      </div>
+
+      <div style="text-align: center;">
+        <button id="start-btn" class="start-button">
+          Comenzar
+          <!-- ArrowRight icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MONITOR SCREEN ============ -->
+  <div id="monitor-screen" class="monitor-screen state-emerald hidden">
+    <!-- Header -->
+    <header class="monitor-header">
+      <div class="monitor-header-logo">
+        <!-- Volume2 icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+        <h1 class="monitor-header-title">SERENO</h1>
+      </div>
+      <p class="monitor-header-subtitle">Estado de tu sala de estudio</p>
+    </header>
+
+    <!-- Main card -->
+    <main class="monitor-main">
+      <div id="noise-card" class="noise-card">
+        <p class="noise-card-title">Nivel de ruido</p>
+
+        <!-- Big dB number -->
+        <div class="db-display">
+          <div id="db-wrap" class="db-number-wrap">
+            <span id="db-number" class="db-number">42</span>
+            <span class="db-unit">dB</span>
+          </div>
+        </div>
+
+        <!-- Status indicator -->
+        <div id="status-indicator" class="status-indicator">
+          <span id="status-dot-wrap" class="status-dot-wrap">
+            <span id="status-dot-ping" class="status-dot-ping"></span>
+            <span id="status-dot" class="status-dot"></span>
+          </span>
+          <span id="status-label" class="status-label">SE PUEDE TRABAJAR</span>
+        </div>
+
+        <!-- Description -->
+        <p id="status-description" class="status-description">
+          El nivel de ruido actual permite estudiar y trabajar con normalidad.
+        </p>
+
+        <!-- Last measurement time -->
+        <div class="last-measurement">
+          <!-- Clock icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Última medición: <strong id="last-measured">--</strong></span>
+        </div>
+
+        <!-- Update button -->
+        <button id="update-btn" class="update-button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          <span id="update-btn-text">Actualizar medición</span>
+        </button>
+      </div>
+
+      <!-- Back button -->
+      <div class="back-button-wrap">
+        <button id="back-btn" class="back-button">
+          <!-- ArrowLeft icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Volver al inicio
+        </button>
+      </div>
+
+      <!-- Footer note -->
+      <p class="footer-note">Datos de demostración — las mediciones son simuladas.</p>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // ---- State ----
+      var db = 42;
+      var lastMeasured = new Date();
+      var loading = false;
+      var loadingTimeout = null;
+
+      // ---- DOM references ----
+      var welcomeScreen   = document.getElementById("welcome-screen");
+      var monitorScreen   = document.getElementById("monitor-screen");
+      var startBtn        = document.getElementById("start-btn");
+      var backBtn         = document.getElementById("back-btn");
+      var updateBtn       = document.getElementById("update-btn");
+      var updateBtnText   = document.getElementById("update-btn-text");
+      var updateBtnIcon   = updateBtn.querySelector("svg");
+      var dbNumber        = document.getElementById("db-number");
+      var dbWrap          = document.getElementById("db-wrap");
+      var statusIndicator = document.getElementById("status-indicator");
+      var statusDotWrap   = document.getElementById("status-dot-wrap");
+      var statusDotPing   = document.getElementById("status-dot-ping");
+      var statusDot       = document.getElementById("status-dot");
+      var statusLabel     = document.getElementById("status-label");
+      var statusDesc      = document.getElementById("status-description");
+      var lastMeasuredEl  = document.getElementById("last-measured");
+      var noiseCard       = document.getElementById("noise-card");
+
+      // ---- Helpers ----
+      function formatTime(date) {
+        var h = String(date.getHours()).padStart(2, "0");
+        var m = String(date.getMinutes()).padStart(2, "0");
+        var s = String(date.getSeconds()).padStart(2, "0");
+        return h + ":" + m + ":" + s;
+      }
+
+      function getLevelState(val) {
+        if (val < 50) {
+          return {
+            state: "emerald",
+            label: "SE PUEDE TRABAJAR",
+            description: "El nivel de ruido actual permite estudiar y trabajar con normalidad."
+          };
+        }
+        if (val <= 65) {
+          return {
+            state: "amber",
+            label: "CONCENTRACIÓN MEDIA",
+            description: "Hay algo de ruido. Puede ser necesario concentrarse más."
+          };
+        }
+        return {
+          state: "red",
+          label: "RUIDO ALTO",
+          description: "El nivel de ruido puede dificultar el estudio."
+        };
+      }
+
+      function applyLevel(val) {
+        var lvl = getLevelState(val);
+        // Remove old state classes
+        monitorScreen.classList.remove("state-emerald", "state-amber", "state-red");
+        // Add new state class
+        monitorScreen.classList.add("state-" + lvl.state);
+        // Update text
+        statusLabel.textContent = lvl.label;
+        statusDesc.textContent = lvl.description;
+      }
+
+      function showScreen(name) {
+        if (name === "welcome") {
+          welcomeScreen.classList.remove("hidden");
+          monitorScreen.classList.add("hidden");
+        } else {
+          welcomeScreen.classList.add("hidden");
+          monitorScreen.classList.remove("hidden");
+        }
+      }
+
+      function setLoading(isLoading) {
+        loading = isLoading;
+        updateBtn.disabled = isLoading;
+
+        if (isLoading) {
+          dbWrap.classList.add("loading");
+          statusDotWrap.classList.add("loading");
+          statusDesc.classList.add("loading");
+          statusDotPing.style.display = "none";
+          dbNumber.textContent = "--";
+          statusLabel.textContent = "MIDIENDO…";
+          statusDesc.textContent = "Simulando nueva medición…";
+          updateBtnText.textContent = "Actualizando…";
+          updateBtnIcon.classList.add("spin");
+        } else {
+          dbWrap.classList.remove("loading");
+          statusDotWrap.classList.remove("loading");
+          statusDesc.classList.remove("loading");
+          statusDotPing.style.display = "";
+          updateBtnText.textContent = "Actualizar medición";
+          updateBtnIcon.classList.remove("spin");
+        }
+      }
+
+      function handleUpdate() {
+        if (loading) return;
+        setLoading(true);
+        window.setTimeout(function () {
+          var newDb = Math.round(30 + Math.random() * 45);
+          db = newDb;
+          lastMeasured = new Date();
+          dbNumber.textContent = String(newDb);
+          applyLevel(newDb);
+          lastMeasuredEl.textContent = formatTime(lastMeasured);
+          setLoading(false);
+        }, 1000);
+      }
+
+      // ---- Init ----
+      function init() {
+        // Set initial values
+        dbNumber.textContent = String(db);
+        applyLevel(db);
+        lastMeasuredEl.textContent = formatTime(lastMeasured);
+
+        // Event listeners
+        startBtn.addEventListener("click", function () {
+          showScreen("monitor");
+        });
+        backBtn.addEventListener("click", function () {
+          showScreen("welcome");
+        });
+        updateBtn.addEventListener("click", handleUpdate);
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
